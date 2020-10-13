@@ -1,0 +1,41 @@
+---------------- README file for CITS3002 project -----------------------------
+
+Use the Makefile to compile the program. If this doesnt work, the file 
+basic_server_select.c can be used instead. This will only work for >1 clients
+as it will try to immediatly send a "VICT" package to the client. 
+basic_server_single_client.c has been included as an exanple of only 1 client
+playing but it DOES NOT INCLUDE ANY OTHER FUNCTIONALITY. As this is a battle
+royale game, it doesn't really make sense for only 1 player to play anyway.
+
+Currently, we have a debugging variable turned on. This slows down the server
+and allows for testing of clients trying to join mid game or disconnecting
+clients. To turn this off, set debug = false; in the main function. This will
+also limit the output of print functions in the server.
+
+In our implementation, the number of players the server would wait for is 
+specified in the header file. After 30 seconds, if the specified number of
+players has not joined (i.e. NO_OF_CLIENTS = 4), it will shut down. If they 
+have joined, the game will start immediatly.
+
+The number of lives (NO_OF_LIVES) is defined in the header file and is 
+currently set to 5.
+
+Select has been used to timeout clients making a move in the play_round 
+function. Move timeout result in the client losing a life and is 
+sent “FAIL” as per the LMS updates.
+
+Cheating has been defined as any client that sends a packet that contains 
+more than 14 characters. If a client is caught doing this then they are 
+immediately eliminated from the game. 
+
+Incorretly formed packets are intepreted to be mixed up packets,
+i.e. 001,MOV,ODD being sent as ODD,MOV,001. 
+The server will handle this by identifying the first instance of one of the
+valid moves. If the server doesnt recognise any of the packets but it is
+the correct length, the player will only loose a life and will receive "FAIL".
+
+Clients leaving mid game can be detected by checking the return value of recv 
+in the play_round function. A value less than or equal to 0 tells the server 
+that the client is no longer present and the server sets the life for this 
+client as -2
+
